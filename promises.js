@@ -73,3 +73,63 @@ console.log(1);
 
 const some = new Promise((resolve, reject) => resolve("ohoo"));
 some.then(res => console.log(res));
+
+//race
+// A common use case for racing promises is to create a time out on the client.
+// You can send a request and race that request with a timeout of whatever length you give it,
+//  passing Promise.reject to the timeout handler.
+
+// racing a promise against a timeout promise is a possible use case.
+//  Another scenario might be fetching the same information from two different sources and only waiting for
+//   the faster response.
+const p1 = new Promise((resolve, reject) => resolve("ohoo"));
+const p2 = new Promise((resolve, reject) => reject("alas"));
+
+Promise.race([p1, p2])
+  .then(() => console.log("happy"))
+  .catch(er => console.log(er));
+
+/**
+ * Below are the Promise.all() with Various parameters.
+ **/
+
+// Defined the Resuable Callback.
+var onFulFillment = function(data) {
+  console.log("Success: ", data);
+};
+
+var onRejection = function(error) {
+  console.log("Catch: ", error);
+};
+
+// Below are the Invalid Promises.
+var invalidPromise1 = Promise.all(undefined);
+var invalidPromise2 = Promise.all();
+var invalidPromise3 = Promise.all({});
+var invalidPromise4 = Promise.all(99);
+var invalidPromise5 = Promise.all(true);
+var invalidPromise6 = Promise.all(false);
+
+// Below all triggers Rejection Callback of Catch Method
+invalidPromise1.then(onFulFillment).catch(onRejection);
+
+// This call rejection callback in then method is one more way.
+invalidPromise2.then(onFulFillment, onRejection);
+
+invalidPromise3.then(onFulFillment).catch(onRejection);
+invalidPromise4.then(onFulFillment).catch(onRejection);
+invalidPromise5.then(onFulFillment).catch(onRejection);
+invalidPromise6.then(onFulFillment).catch(onRejection);
+
+var invalidPromise7 = Promise.all("test");
+// Trigger FulFillment Callback of then Method.
+// Then Method Return: ["t", "e", "s", "t"]
+
+var invalidPromise8 = Promise.all("");
+var invalidPromise9 = Promise.all([]);
+// Trigger FulFillment Callback of then Method.
+// Then Method Return: []
+
+invalidPromise7.then(onFulFillment).catch(onRejection);
+invalidPromise8.then(onFulFillment).catch(onRejection);
+invalidPromise9.then(onFulFillment).catch(onRejection);
