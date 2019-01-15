@@ -133,3 +133,51 @@ var invalidPromise9 = Promise.all([]);
 invalidPromise7.then(onFulFillment).catch(onRejection);
 invalidPromise8.then(onFulFillment).catch(onRejection);
 invalidPromise9.then(onFulFillment).catch(onRejection);
+
+const somefunction = function(x) {
+  return Promise.resolve(x);
+};
+
+somefunction("some")
+  .then(r => console.log(r))
+  .then(r => console.log(r)); //if you want "some" here, use pyramid
+
+//promises fall through
+// The reason this happens is because when you pass then()
+// a non-function (such as a promise), it actually interprets it as then(null)
+Promise.resolve("foo")
+  .then(Promise.resolve("bar"))
+  .then(function(result) {
+    console.log(result); //prints foo
+  });
+
+//So just remind yourself: always pass a function into then()!
+Promise.resolve("foo")
+  .then(function() {
+    return Promise.resolve("bar");
+  })
+  .then(function(result) {
+    console.log(result); //prints bar
+  });
+
+const doSomething = function() {
+  return Promise.resolve("anu");
+};
+
+const doSomethingElse = function(x) {
+  return Promise.resolve("dd" + x);
+};
+
+doSomething()
+  .then(x => {
+    return doSomethingElse(x);
+  })
+  .then(x => console.log(x)); //ddundefined
+
+doSomething().then(function() {
+  doSomethingElse();
+});
+
+doSomething().then(doSomethingElse());
+
+doSomething().then(doSomethingElse);
